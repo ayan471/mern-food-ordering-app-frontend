@@ -1,15 +1,15 @@
-import { useCreateCheckkoutSession } from "@/api/OrderApi";
 import { useGetRestaurant } from "@/api/RestaurantApi";
-import CheckoutButton from "@/components/CheckoutButton";
-import MenuItems from "@/components/MenuItem";
+import MenuItem from "@/components/MenuItem";
 import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
-import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
-import { MenuItem as MenuItemType } from "@/types";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { MenuItem as MenuItemType } from "../types";
+import CheckoutButton from "@/components/CheckoutButton";
+import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
+import { useCreateCheckoutSession } from "@/api/OrderApi";
 
 export type CartItem = {
   _id: string;
@@ -22,7 +22,7 @@ const DetailPage = () => {
   const { restaurantId } = useParams();
   const { restaurant, isLoading } = useGetRestaurant(restaurantId);
   const { createCheckoutSession, isLoading: isCheckoutLoading } =
-    useCreateCheckkoutSession();
+    useCreateCheckoutSession();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
@@ -54,6 +54,7 @@ const DetailPage = () => {
           },
         ];
       }
+
       sessionStorage.setItem(
         `cartItems-${restaurantId}`,
         JSON.stringify(updatedCartItems)
@@ -73,6 +74,7 @@ const DetailPage = () => {
         `cartItems-${restaurantId}`,
         JSON.stringify(updatedCartItems)
       );
+
       return updatedCartItems;
     });
   };
@@ -119,12 +121,13 @@ const DetailPage = () => {
           <RestaurantInfo restaurant={restaurant} />
           <span className="text-2xl font-bold tracking-tight">Menu</span>
           {restaurant.menuItems.map((menuItem) => (
-            <MenuItems
+            <MenuItem
               menuItem={menuItem}
               addToCart={() => addToCart(menuItem)}
             />
           ))}
         </div>
+
         <div>
           <Card>
             <OrderSummary
